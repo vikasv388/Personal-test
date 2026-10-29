@@ -1,30 +1,43 @@
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-import time
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
+# Start Chrome browser
 driver = webdriver.Chrome()
 
-driver.get("https://www.google.com")
-driver.maximize_window()
+try:
+    # Open website
+    driver.get("https://www.google.com")
 
-# Search field locate karo
-search_box = driver.find_element(By.NAME, "q")
+    # Maximize browser
+    driver.maximize_window()
 
-# Check search field
-if search_box.is_displayed() and search_box.is_enabled():
-    print("Search field is visible and enabled")
-else:
-    print("Search field is NOT working")
+    # Test 1: Verify page title
+    assert "Google" in driver.title
+    print("PASS: Page title verified")
 
-# Search text enter karo
-search_box.send_keys("SQL automation testing")
+    # Test 2: Find search box
+    search_box = WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located((By.NAME, "q"))
+    )
+    print("PASS: Search box found")
 
-# Search perform karo
-search_box.send_keys(Keys.ENTER)
+    # Test 3: Enter search text
+    search_box.send_keys("Python Selenium testing")
+    search_box.send_keys(Keys.ENTER)
 
-time.sleep(3)
+    # Test 4: Verify search results page
+    WebDriverWait(driver, 10).until(
+        EC.url_contains("search")
+    )
+    print("PASS: Search submitted successfully")
 
-print("Search completed successfully")
+except Exception as error:
+    print("FAIL:", error)
 
-driver.quit()
+finally:
+    # Close browser
+    driver.quit()
